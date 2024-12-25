@@ -12,9 +12,10 @@ ul {
 }
 
 body {
-  background-color: #343a40;
+  background-color: #0e2e4e;
 }
 
 button:hover {
   transform: scale(1.1);
+  color: rgb(0, 0, 0);
 }

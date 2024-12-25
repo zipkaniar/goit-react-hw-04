@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import SAearchBar from "./components/SearchBar";
+import SearchBar from "./components/SearchBar";
 import { Toaster } from "react-hot-toast";
 import ImageGallery from "./components/ImageGallery";
 import Loader from "./components/Loader";
