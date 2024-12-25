@@ -1,35 +1,58 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from "react";
+import SAearchBar from "./components/SearchBar";
+import { Toaster } from "react-hot-toast";
+import ImageGallery from "./components/ImageGallery";
+import Loader from "./components/Loader";
+import LoadMoreBtn from "./components/LoadMoreBtn";
+import ImageModal from "./components/ImageModal";
+import getAndSetImages from "./utils/getAndSetImages";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [images, setImages] = useState([]);
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalImg, setModalImg] = useState(null);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  //unsplash api url
+  const url = `https://api.unsplash.com/search/photos/?client_id=PeHInwo4wEM-mlxWXANbP_LuxMipkZI9iUuVqyecDIo&page=${page}&query=${query}`;
+
+function openModal(image) {
+  setModalImg(image);
+  setIsModalOpen(true);
 }
 
-export default App
+function closeModal() {
+  setIsModalOpen(false);
+  setModalImg(null);
+}
+
+useEffect(() => {
+  if(query) {
+    if(page > 1) {
+      getAndSetImages(url, setLoading, setImages, true);
+    } else {
+      getAndSetImages(url, setLoading, setImages);
+    }
+  }
+}, [query, page, url]);
+
+return (
+  <>
+    <SearchBar query={query} setQuery={setQuery} setPage={setPage} />
+    <ImageGallery images={images} onImgClick={openModal} />
+    {loading && <Loader />}
+    {images.lenght >1 && <LoadMoreBtn setPage={setPage} />}
+    {modalImg && (
+      <ImageModal
+        isModalOpen={isModalOpen}
+        closeModal={closeModal}
+        modalImg={modalImg}
+        />
+    )}
+    <Toaster position="top-center" reverseOrder={false} />
+  </>
+);
+}
+export default App;
